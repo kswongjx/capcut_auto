@@ -32,6 +32,12 @@
 - Keep linting clean with `flake8 pyJianYingDraft tests` before opening a PR.
 - For automation tweaks, run `JianyingController.export_draft` manually on Windows and capture console output for users.
 
+## Building Tools on Top
+- Keep CLIs thin: parse args, call small functions that orchestrate `DraftFolder` and `ScriptFile`.
+- Place ad-hoc scripts in the repo root (or under `tests/`) so `import pyJianYingDraft` works without installation.
+- Prefer high-level helpers (`add_segment`, `replace_*`, `import_track`) over hand-editing JSON; isolate edge-case JSON edits behind utilities.
+- Treat CapCut drafts as the single source of truth—use `inspect_draft.py` to capture resource IDs and timing before hard-coding values.
+
 ## Safeguards
 - Never commit real media, generated drafts, or CapCut cache files; rely on `.gitignore` and local assets.
 - Route filesystem writes through `DraftFolder` to prevent orphaned directories or half-written drafts.

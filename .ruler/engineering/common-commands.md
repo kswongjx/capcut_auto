@@ -1,19 +1,6 @@
 # pyJianYingDraft Common Commands
 
-## Environment Setup
-```powershell
-# Create and activate a virtual environment (Windows PowerShell)
-python -m venv .venv
-. .venv\Scripts\Activate.ps1
-
-# Install the library in editable mode and runtime dependencies
-pip install -e .
-pip install -r requirements.txt
-
-# (Optional) install linting tools used in CI
-pip install flake8
-```
-
+## Prerequisite: Draft Location
 Set `CAPCUT_DRAFT_DIR` to the folder that CapCut/JianYing uses for drafts (or add it to `.env`). Example:
 ```powershell
 setx CAPCUT_DRAFT_DIR "C:\\Users\\<you>\\AppData\\Local\\JianyingPro\\User Data\\Projects\\com.lveditor.draft"
@@ -34,6 +21,36 @@ python tests/inspect_draft.py
 
 Add media files to `tests/mock_assets/` before running the template script, or update `PLACEHOLDER_ASSETS` inside the script.
 
+## Developing Tools on Top (No Install Required)
+Create scripts in the repo root that import the library directly. Example CLI scaffold:
+```python
+#!/usr/bin/env python3
+import argparse
+from pyJianYingDraft import DraftFolder, ScriptFile
+from pyJianYingDraft.time_util import tim, trange
+from pyJianYingDraft.video_segment import VideoSegment
+
+def main():
+    p = argparse.ArgumentParser(description="Generate a CapCut draft from inputs")
+    p.add_argument("--draft-dir", required=True, help="CapCut drafts root (CAPCUT_DRAFT_DIR)")
+    p.add_argument("--video", required=True, help="Path to a local video")
+    args = p.parse_args()
+
+    df = DraftFolder(args.draft_dir)
+    sf = ScriptFile(1920, 1080)
+    track = sf.add_track("video", track_name="main")
+    seg = VideoSegment(args.video, timerange=trange("0s", "3s"))
+    sf.add_segment(seg, track_name=track.name)
+
+    draft = df.create_draft("tool_generated")
+    sf.save(draft)
+    print("Draft written:", draft)
+
+if __name__ == "__main__":
+    main()
+```
+Run it from the repository root so `pyJianYingDraft` is importable without installing.
+
 ## Linting and Static Checks
 ```powershell
 # Run flake8 with the settings in .flake8
@@ -41,15 +58,6 @@ flake8 pyJianYingDraft tests
 
 # Optional: confirm the package imports cleanly
 python -c "import pyJianYingDraft; print(pyJianYingDraft.__version__)"
-```
-
-## Packaging
-```powershell
-# Build source and wheel distributions
-python setup.py sdist bdist_wheel
-
-# Install the freshly built wheel in the active environment
-pip install --force-reinstall dist/pyJianYingDraft-*.whl
 ```
 
 ## Troubleshooting Helpers

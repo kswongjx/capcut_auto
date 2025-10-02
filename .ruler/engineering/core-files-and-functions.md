@@ -42,3 +42,4 @@
 - The quickest validation path is `demo.py`, which creates a three-track draft in-place and showcases animations, transitions, and text bubbles.
 - `tests/create_mock_template.py` demonstrates the template workflow: load `CAPCUT_DRAFT_DIR`, ensure media placeholders, call `DraftFolder.create_draft`, add tracks/segments, then `save()`.
 - `tests/inspect_draft.py` is the go-to script for inspecting existing projects; it prints track summaries and calls `ScriptFile.inspect_material()` so you can copy `resource_id` values into code.
+- For tools built on top of this repo, import `pyJianYingDraft` directly from the repository root (no installation required) and compose drafts via `ScriptFile` exports.
